@@ -11,6 +11,8 @@ const (
 
 func main() {
 	r := cgr.NewRouter()
-	r.Route("/").Handler(func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("home")) }).Method("GET").Insert()
+	r.Route("/").Handler(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("home"))
+	}).Method("GET").Insert()
 	r.Run(port)
 }

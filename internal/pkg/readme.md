@@ -1,0 +1,1 @@
+## code shared between apps in internal dir
