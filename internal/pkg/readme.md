@@ -1,1 +1,2 @@
-## code shared between apps in internal dir
+## internal/pkg
+contains code not specific to the application, each package could be extracted and act as its own public package 

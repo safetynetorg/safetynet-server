@@ -1,1 +1,2 @@
-## application entry point
+## cmd/safteynet
+application entry point
