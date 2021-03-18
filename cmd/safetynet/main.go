@@ -1,7 +1,7 @@
 package main
 
 import (
-	"safteynet/internal/server"
+	"safetynet/internal/server"
 )
 
 func main() {

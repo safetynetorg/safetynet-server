@@ -1,4 +1,4 @@
-module safteynet
+module safetynet
 
 go 1.15
 
