@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"os"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -19,7 +18,6 @@ func Connect() *db {
 
 	ctx = context.Background()
 	mongo_url = os.Getenv("MONGO_URL")
-	fmt.Println("Mongodb: ",mongo_url)
 
 	client_options := options.Client().ApplyURI(mongo_url)
 

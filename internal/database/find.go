@@ -4,13 +4,13 @@ import (
 	"context"
 	"safetynet/internal/constants"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (db *db) find_by_device_id(ctx context.Context, id primitive.ObjectID) (bson.M, error) {
 	var result bson.M
-	filter := bson.M{"deviceid": id}
+	filter := bson.M{"_id": id}
 
 	collection := db.safetynet.Collection(constants.DEVICES_COLL)
 

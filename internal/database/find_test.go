@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"safetynet/internal/constants"
 	"safetynet/internal/helpers"
 	"testing"
 
@@ -14,7 +13,7 @@ func TestFindDeviceId(t *testing.T) {
 	id := primitive.NewObjectID()
 	db := Connect()
 	model := SafetynetDevice{Id: id}
-	db.insert(constants.DEVICES_COLL, context.Background(), model)
+	db.insert(context.Background(), model)
 	_, err := db.find_by_device_id(context.Background(), id)
 	if err != nil {
 		t.Fatal("Could not find document:", err)

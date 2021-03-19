@@ -29,8 +29,10 @@ func (db *db) FindWhoAlert(ctx context.Context, src *SafetynetDevice) ([]*Safety
 
 	for cursor.Next(ctx) {
 		wg.Add(1)
+		
 		go func(c mongo.Cursor) {
 			defer wg.Done()
+
 			var device SafetynetDevice
 
 			if err := c.Decode(&device); err != nil || device.Id == src.Id {
