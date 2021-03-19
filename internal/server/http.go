@@ -7,10 +7,11 @@ import (
 	"github.com/ChristianStefaniw/cgr"
 )
 
-func http_init() *cgr.Router {
+func httpInit() *cgr.Router {
 	router := cgr.NewRouter()
 
-	router.Route("/alert").Handler(handlers.AlertHandler).Method("POST").Insert()
+	router.Route("/alert").Handler(handlers.FindDevicesToAlert).Method("POST").Insert()
+	router.Route("/check").Handler(handlers.Alert).Method("GET").Insert()
 
 	router.Route("/viewroutes").Handler(func(w http.ResponseWriter, r *http.Request) {
 		for _, route := range router.ViewRouteTree() {

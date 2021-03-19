@@ -2,17 +2,16 @@ package database
 
 import (
 	"context"
-	"safetynet/internal/constants"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (db *db) find_by_device_id(ctx context.Context, id primitive.ObjectID) (bson.M, error) {
+func (db *db) FindDeviceById(coll string, ctx context.Context, id primitive.ObjectID) (bson.M, error) {
 	var result bson.M
 	filter := bson.M{"_id": id}
 
-	collection := db.safetynet.Collection(constants.DEVICES_COLL)
+	collection := db.Safetynet.Collection(coll)
 
 	if err := collection.FindOne(ctx, filter).Decode(&result); err != nil {
 		return nil, err

@@ -1,9 +1,9 @@
-package database
+package location
 
 import (
 	"context"
 	"safetynet/internal/constants"
-	"safetynet/internal/location"
+	"safetynet/internal/database"
 	"sync"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -12,14 +12,14 @@ import (
 
 var mutex = &sync.Mutex{}
 
-func (db *db) FindWhoAlert(ctx context.Context, src *SafetynetDevice) ([]*SafetynetDevice, error) {
+func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) ([]*database.SafetynetDevice, error) {
 
-	var devices []*SafetynetDevice
+	var devices []*database.SafetynetDevice
 	var wg sync.WaitGroup
 
-	collection := db.safetynet.Collection(constants.DEVICES_COLL)
+	devicesColl := database.Database.Safetynet.Collection(constants.DEVICES_COLL)
 
-	cursor, err := collection.Find(ctx, bson.D{{}})
+	cursor, err := devicesColl.Find(ctx, bson.D{{}})
 	if err != nil {
 		return nil, err
 
@@ -27,28 +27,30 @@ func (db *db) FindWhoAlert(ctx context.Context, src *SafetynetDevice) ([]*Safety
 	defer cursor.Close(ctx)
 
 	for cursor.Next(ctx) {
+
 		wg.Add(1)
 
 		go func(c mongo.Cursor) {
 			defer wg.Done()
 
-			var device SafetynetDevice
+			var device database.SafetynetDevice
 
 			if err := c.Decode(&device); err != nil || device.Id == src.Id {
 				return
 			}
 
-			pair := &location.LatLonPair{
+			pair := &latLonPar{
 				LatSrc:  src.Lat,
 				LonSrc:  src.Lon,
 				LatDest: device.Lat,
 				LonDest: device.Lon,
 			}
 
-			if location.CheckInDistance(pair) {
+			if checkInDistance(pair) {
 				mutex.Lock()
 				devices = append(devices, &device)
 				mutex.Unlock()
+				database.Database.Insert(constants.ALERT_IDS_COLL, ctx, database.AlertThisId{Id: device.Id})
 			}
 		}(*cursor)
 	}

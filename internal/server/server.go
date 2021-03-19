@@ -5,6 +5,6 @@ import (
 )
 
 func Run() {
-	r := http_init()
+	r := httpInit()
 	r.Run(constants.PORT)
 }

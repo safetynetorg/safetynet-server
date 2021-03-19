@@ -6,21 +6,21 @@ import (
 	"safetynet/internal/helpers"
 )
 
-type LatLonPair struct {
+type latLonPar struct {
 	LatSrc  float64
 	LonSrc  float64
 	LatDest float64
 	LonDest float64
 }
 
-func CheckInDistance(lat_lon *LatLonPair) bool {
-	distance_between := distance_between_lat_lon(lat_lon)
+func checkInDistance(lat_lon *latLonPar) bool {
+	distance_between := distanceBetweenLatLon(lat_lon)
 
 	return distance_between <= constants.ALERT_RADIUS
 }
 
 // in km
-func distance_between_lat_lon(lat_lon *LatLonPair) float64 {
+func distanceBetweenLatLon(lat_lon *latLonPar) float64 {
 	delta_lat := helpers.AsRadians(lat_lon.LatDest - lat_lon.LatSrc)
 	delta_lon := helpers.AsRadians(lat_lon.LonDest - lat_lon.LonSrc)
 

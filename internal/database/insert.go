@@ -2,12 +2,11 @@ package database
 
 import (
 	"context"
-	"safetynet/internal/constants"
 )
 
-func (db *db) insert(ctx context.Context, docs ...interface{}) error {
+func (db *db) Insert(coll string, ctx context.Context, docs ...interface{}) error {
 
-	collection := db.safetynet.Collection(constants.DEVICES_COLL)
+	collection := db.Safetynet.Collection(coll)
 
 	if _, err := collection.InsertMany(ctx, docs); err != nil {
 		return err

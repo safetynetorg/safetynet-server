@@ -6,15 +6,16 @@ import (
 	"fmt"
 	"net/http"
 	"safetynet/internal/database"
+	"safetynet/internal/location"
 )
 
-func AlertHandler(w http.ResponseWriter, r *http.Request) {
+func FindDevicesToAlert(w http.ResponseWriter, r *http.Request) {
 	var device database.SafetynetDevice
 	if err := json.NewDecoder(r.Body).Decode(&device); err != nil {
 		w.Write([]byte("errorr"))
 		return
 	}
-	devices_to_alert, err := database.Database.FindWhoAlert(context.Background(), &device)
+	devices_to_alert, err := location.FindDevicesToAlert(context.Background(), &device)
 	if err != nil {
 		w.Write([]byte("error"))
 		return
