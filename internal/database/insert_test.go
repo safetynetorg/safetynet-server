@@ -8,10 +8,10 @@ import (
 	"github.com/google/uuid"
 )
 
-func TestInsertSafetynet(t *testing.T) {
+func TestInsert(t *testing.T) {
 	helpers.LoadDotEnv()
 	db := Connect()
-	model := safetynet_device_id{Id: uuid.New()}
+	model := safetynet_device{Id: uuid.New()}
 	err := db.insert("ids", context.Background(), model)
 	if err != nil {
 		t.Fatal("Could not insert into db:", err)
