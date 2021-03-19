@@ -8,7 +8,7 @@ func (db *db) insert(coll string, ctx context.Context, docs ...interface{}) erro
 
 	collection := db.safetynet.Collection(coll)
 
-	if _, err := collection.InsertMany(ctx, docs); err != nil{
+	if _, err := collection.InsertMany(ctx, docs); err != nil {
 		return err
 	}
 

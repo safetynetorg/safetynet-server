@@ -2,17 +2,22 @@ package database
 
 import (
 	"context"
-	"safetynet/internal/pkg/helpers"
+	"fmt"
+	"safetynet/internal/constants"
+	"safetynet/internal/helpers"
 	"testing"
 
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestInsert(t *testing.T) {
 	helpers.LoadDotEnv()
 	db := Connect()
-	model := safetynet_device{Id: uuid.New()}
-	err := db.insert("ids", context.Background(), model)
+	id := primitive.NewObjectID()
+	fmt.Println(id)
+	//lat: 43.649632  lon: -79.483017
+	model := SafetynetDevice{Id: id, Lat: 43.650761, Lon: -79.483131}
+	err := db.insert(constants.DEVICES_COLL, context.Background(), model)
 	if err != nil {
 		t.Fatal("Could not insert into db:", err)
 	}

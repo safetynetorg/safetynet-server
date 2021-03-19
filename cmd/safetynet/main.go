@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"safetynet/internal/database"
+	"safetynet/internal/helpers"
 	"safetynet/internal/server"
-	"safetynet/internal/pkg/helpers"
 )
 
 func main() {

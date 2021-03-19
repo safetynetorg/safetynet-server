@@ -2,19 +2,21 @@ package server
 
 import (
 	"net/http"
-	"safetynet/internal/pkg/constants"
+	"safetynet/internal/server/handlers"
 
 	"github.com/ChristianStefaniw/cgr"
 )
 
-func http_init() {
-	r := cgr.NewRouter()
-	r.Route("/").Handler(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("home"))
-	}).Method("GET").Insert()
-	r.Run(constants.PORT)
-}
+func http_init() *cgr.Router {
+	router := cgr.NewRouter()
 
-func Run() {
-	http_init()
+	router.Route("/alert").Handler(handlers.AlertHandler).Method("POST").Insert()
+
+	router.Route("/viewroutes").Handler(func(w http.ResponseWriter, r *http.Request) {
+		for _, route := range router.ViewRouteTree() {
+			w.Write([]byte(route))
+		}
+	}).Method("GET").Insert()
+
+	return router
 }

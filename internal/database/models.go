@@ -1,11 +1,11 @@
 package database
 
 import (
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type safetynet_device struct {
-	Id  uuid.UUID `bson:"deviceid,omitempty"`
-	Lat float64   `bson:"lat,omitempty"`
-	Lon float64   `bson:"lon,omitempty"`
+type SafetynetDevice struct {
+	Id  primitive.ObjectID `bson:"_id,omitempty"`
+	Lat float64            `bson:"lat,omitempty"`
+	Lon float64            `bson:"lon,omitempty"`
 }

@@ -26,10 +26,12 @@ func Connect() *db {
 		log.Fatal(err)
 	}
 
-	err = client.Ping(ctx, nil)
-	if err != nil {
+	if err := client.Ping(ctx, nil); err != nil {
 		log.Fatal(err)
 	}
 
-	return &db{safetynet: client.Database("safetynet")}
+	db := &db{safetynet: client.Database("safetynet")}
+	Database = db
+
+	return db
 }

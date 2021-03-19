@@ -2,18 +2,19 @@ package database
 
 import (
 	"context"
-	"safetynet/internal/pkg/helpers"
+	"safetynet/internal/constants"
+	"safetynet/internal/helpers"
 	"testing"
 
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestFindDeviceId(t *testing.T) {
 	helpers.LoadDotEnv()
-	id := uuid.New()
+	id := primitive.NewObjectID()
 	db := Connect()
-	model := safetynet_device{Id: id}
-	db.insert("ids", context.Background(), model)
+	model := SafetynetDevice{Id: id}
+	db.insert(constants.DEVICES_COLL, context.Background(), model)
 	_, err := db.find_by_device_id(context.Background(), id)
 	if err != nil {
 		t.Fatal("Could not find document:", err)

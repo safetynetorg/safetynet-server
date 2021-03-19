@@ -7,7 +7,6 @@ require (
 	github.com/aws/aws-sdk-go v1.38.0 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/go-cmp v0.5.5 // indirect
-	github.com/google/uuid v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/klauspost/compress v1.11.12 // indirect
 	github.com/kr/text v0.2.0 // indirect
