@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"safetynet/internal/constants"
 	"safetynet/internal/location"
 	"sync"
@@ -29,7 +28,7 @@ func (db *db) FindWhoAlert(ctx context.Context, src *SafetynetDevice) ([]*Safety
 
 	for cursor.Next(ctx) {
 		wg.Add(1)
-		
+
 		go func(c mongo.Cursor) {
 			defer wg.Done()
 
@@ -47,7 +46,6 @@ func (db *db) FindWhoAlert(ctx context.Context, src *SafetynetDevice) ([]*Safety
 			}
 
 			if location.CheckInDistance(pair) {
-				fmt.Println(device)
 				mutex.Lock()
 				devices = append(devices, &device)
 				mutex.Unlock()

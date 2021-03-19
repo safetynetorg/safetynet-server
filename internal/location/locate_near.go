@@ -16,11 +16,7 @@ type LatLonPair struct {
 func CheckInDistance(lat_lon *LatLonPair) bool {
 	distance_between := distance_between_lat_lon(lat_lon)
 
-	if distance_between <= constants.ALERT_RADIUS {
-		return true
-	}
-
-	return false
+	return distance_between <= constants.ALERT_RADIUS
 }
 
 // in km
@@ -36,5 +32,5 @@ func distance_between_lat_lon(lat_lon *LatLonPair) float64 {
 	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
 	d := constants.EARTH_RADIUS * c
 
-	return math.Round(d)
+	return d
 }
