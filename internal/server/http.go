@@ -10,6 +10,7 @@ import (
 func httpInit() *cgr.Router {
 	router := cgr.NewRouter()
 
+	// api endpoints
 	router.Route("/alert").Handler(handlers.FindDevicesToAlert).Method("POST").Insert()
 	router.Route("/new").Handler(handlers.NewDevice).Method("POST").Insert()
 	router.Route("/updatelocation").Handler(handlers.UpdateLocation).Method("PUT").Insert()

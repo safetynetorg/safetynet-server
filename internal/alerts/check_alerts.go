@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// check if a device is in the alert collection
 func CheckAlert(id primitive.ObjectID) (*database.SafetynetDevice, bool, error) {
 	var device *database.SafetynetDevice
 	doc, err := database.Database.FindDeviceById(constants.ALERT_COLL, context.Background(), id)

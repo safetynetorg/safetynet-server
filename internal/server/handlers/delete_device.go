@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// delete a registered device
 func DeleteDevice(w http.ResponseWriter, r *http.Request) {
 	var device database.SafetynetDevice
 

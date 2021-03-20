@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// update a devices location
 func UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	var device database.SafetynetDevice
 	json.NewDecoder(r.Body).Decode(&device)

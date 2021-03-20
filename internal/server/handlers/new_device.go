@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// register a new device
 func NewDevice(w http.ResponseWriter, r *http.Request) {
 	var device database.SafetynetDevice
 	device.Id = primitive.NewObjectID()

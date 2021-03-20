@@ -12,16 +12,17 @@ import (
 
 var mutex = &sync.Mutex{}
 
-func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) ([]*database.SafetynetDevice, error) {
+// find devices to alert when someone is in dange
+func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int, error) {
 
-	var devices []*database.SafetynetDevice
+	var devices_alerted int
 	var wg sync.WaitGroup
 
 	devicesColl := database.Database.Safetynet.Collection(constants.DEVICES_COLL)
 
 	cursor, err := devicesColl.Find(ctx, bson.D{{}})
 	if err != nil {
-		return nil, err
+		return 0, err
 
 	}
 	defer cursor.Close(ctx)
@@ -46,15 +47,22 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) ([]*
 				LonRecv: device.Lon,
 			}
 
+			// check if the receiver device is in range of the alert
 			if checkInDistance(pair) {
+
+				// make sure that only one goroutine can mutate the [devices_alerted] variable at a time
+				// prevents race condition
 				mutex.Lock()
-				devices = append(devices, &device)
+				devices_alerted++
 				mutex.Unlock()
+
+				// add the receiver device to the alert collection
 				database.Database.Insert(constants.ALERT_COLL, ctx, database.SafetynetDevice{Id: device.Id, Lat: pair.LatSrc, Lon: pair.LonSrc})
 			}
 		}(*cursor)
 	}
 
+	// wait for goroutines in waitgroup to complete
 	wg.Wait()
-	return devices, nil
+	return devices_alerted, nil
 }

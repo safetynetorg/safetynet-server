@@ -6,6 +6,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// load environment
 func LoadDotEnv() {
 	err := godotenv.Load("../../.env")
 
