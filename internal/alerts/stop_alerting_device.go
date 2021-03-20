@@ -10,7 +10,7 @@ import (
 )
 
 func StopAlertingDevice(id primitive.ObjectID) {
-	const duration = 5 * time.Second
+	const duration = constants.ALERTLIFETIME * time.Second
 
 	deadline := time.Now().Add(duration)
 
