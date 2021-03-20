@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"safetynet/internal/constants"
 	"safetynet/internal/database"
@@ -12,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func Alert(w http.ResponseWriter, r *http.Request) {
+func CheckAlert(w http.ResponseWriter, r *http.Request) {
 	var id *database.AlertThisId
 
 	if err := json.NewDecoder(r.Body).Decode(&id); err != nil {
@@ -23,9 +22,7 @@ func Alert(w http.ResponseWriter, r *http.Request) {
 	found, err := checkAlert(id.Id)
 
 	if err != nil {
-		fmt.Println(err)
-		w.Write([]byte("error"))
-		return
+		http.Error(w, err.Error(), 500)
 	}
 
 	w.Write([]byte(strconv.FormatBool(found)))

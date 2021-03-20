@@ -9,6 +9,5 @@ import (
 func main() {
 	helpers.LoadDotEnv()
 	database.Connect()
-
 	server.Run()
 }

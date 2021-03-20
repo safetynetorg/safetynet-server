@@ -11,8 +11,9 @@ func httpInit() *cgr.Router {
 	router := cgr.NewRouter()
 
 	router.Route("/alert").Handler(handlers.FindDevicesToAlert).Method("POST").Insert()
+	router.Route("/new").Handler(handlers.NewDevice).Method("POST").Insert()
 	router.Route("/updatelocation").Handler(handlers.UpdateLocation).Method("PUT").Insert()
-	router.Route("/check").Handler(handlers.Alert).Method("GET").Insert()
+	router.Route("/check").Handler(handlers.CheckAlert).Method("GET").Insert()
 
 	router.Route("/viewroutes").Handler(func(w http.ResponseWriter, r *http.Request) {
 		for _, route := range router.ViewRouteTree() {

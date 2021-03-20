@@ -3,23 +3,22 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"safetynet/internal/database"
 	"safetynet/internal/location"
+	"strconv"
 )
 
 func FindDevicesToAlert(w http.ResponseWriter, r *http.Request) {
 	var device database.SafetynetDevice
 	if err := json.NewDecoder(r.Body).Decode(&device); err != nil {
-		w.Write([]byte("errorr"))
+		http.Error(w, err.Error(), 500)
 		return
 	}
 	devices_to_alert, err := location.FindDevicesToAlert(context.Background(), &device)
 	if err != nil {
-		w.Write([]byte("error"))
+		http.Error(w, err.Error(), 500)
 		return
 	}
-	fmt.Println(devices_to_alert)
-	w.Write([]byte("ok"))
+	w.Write([]byte(strconv.Itoa(len(devices_to_alert))))
 }
