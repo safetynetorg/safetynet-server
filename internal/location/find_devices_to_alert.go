@@ -42,15 +42,15 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) ([]*
 			pair := &latLonPair{
 				LatSrc:  src.Lat,
 				LonSrc:  src.Lon,
-				LatDest: device.Lat,
-				LonDest: device.Lon,
+				LatRecv: device.Lat,
+				LonRecv: device.Lon,
 			}
 
 			if checkInDistance(pair) {
 				mutex.Lock()
 				devices = append(devices, &device)
 				mutex.Unlock()
-				database.Database.Insert(constants.ALERT_IDS_COLL, ctx, database.AlertThisId{Id: device.Id})
+				database.Database.Insert(constants.ALERT_COLL, ctx, database.SafetynetDevice{Id: device.Id, Lat: pair.LatSrc, Lon: pair.LonSrc})
 			}
 		}(*cursor)
 	}

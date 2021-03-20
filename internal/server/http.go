@@ -13,7 +13,7 @@ func httpInit() *cgr.Router {
 	router.Route("/alert").Handler(handlers.FindDevicesToAlert).Method("POST").Insert()
 	router.Route("/new").Handler(handlers.NewDevice).Method("POST").Insert()
 	router.Route("/updatelocation").Handler(handlers.UpdateLocation).Method("PUT").Insert()
-	router.Route("/check").Handler(handlers.CheckAlert).Method("GET").Insert()
+	router.Route("/check/:id").Handler(handlers.CheckAlert).Method("GET").Insert()
 
 	router.Route("/viewroutes").Handler(func(w http.ResponseWriter, r *http.Request) {
 		for _, route := range router.ViewRouteTree() {

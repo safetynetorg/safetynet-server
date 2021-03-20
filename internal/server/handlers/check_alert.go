@@ -6,35 +6,51 @@ import (
 	"net/http"
 	"safetynet/internal/constants"
 	"safetynet/internal/database"
-	"strconv"
 
+	"github.com/ChristianStefaniw/cgr"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func CheckAlert(w http.ResponseWriter, r *http.Request) {
-	var id *database.AlertThisId
-
-	if err := json.NewDecoder(r.Body).Decode(&id); err != nil {
-		w.Write([]byte("error"))
-		return
-	}
-
-	found, err := checkAlert(id.Id)
-
+	id, err := primitive.ObjectIDFromHex(cgr.GetParams(r)["id"])
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
 
-	w.Write([]byte(strconv.FormatBool(found)))
+	device, found, err := checkAlert(id)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	if !found {
+		w.Write([]byte("none"))
+		return
+	}
+
+	b, err := json.Marshal(device)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	w.Write(b)
 
 }
 
-func checkAlert(id primitive.ObjectID) (bool, error) {
-	count, err := database.Database.Count(constants.ALERT_IDS_COLL, context.Background(), id)
-
+func checkAlert(id primitive.ObjectID) (*database.SafetynetDevice, bool, error) {
+	var device *database.SafetynetDevice
+	doc, err := database.Database.FindDeviceById(constants.ALERT_COLL, context.Background(), id)
 	if err != nil {
-		return false, err
+		if err.Error() == "mongo: no documents in result" {
+			return nil, false, nil
+		}
+		return nil, false, err
 	}
 
-	return count > 0, nil
+	bsonBytes, _ := bson.Marshal(doc)
+	bson.Unmarshal(bsonBytes, &device)
+
+	return device, true, err
 }

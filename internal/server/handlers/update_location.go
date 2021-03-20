@@ -16,6 +16,7 @@ func UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	payload := bson.M{"$set": bson.M{"lat": device.Lat, "lon": device.Lon}}
 	if err := database.Database.Update(constants.DEVICES_COLL, context.Background(), device.Id, payload); err != nil {
 		http.Error(w, err.Error(), 500)
+		return
 	}
 	json.NewEncoder(w).Encode(device)
 }

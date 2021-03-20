@@ -17,6 +17,7 @@ func NewDevice(w http.ResponseWriter, r *http.Request) {
 
 	if err := database.Database.Insert(constants.DEVICES_COLL, context.Background(), device); err != nil {
 		http.Error(w, err.Error(), 500)
+		return
 	}
 
 	w.Write([]byte(device.Id.Hex()))

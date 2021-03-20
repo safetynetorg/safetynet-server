@@ -9,7 +9,3 @@ type SafetynetDevice struct {
 	Lat float64            `bson:"lat,omitempty"`
 	Lon float64            `bson:"lon,omitempty"`
 }
-
-type AlertThisId struct {
-	Id primitive.ObjectID `bson:"_id,omitempty"`
-}
