@@ -14,6 +14,7 @@ func httpInit() *cgr.Router {
 	router.Route("/new").Handler(handlers.NewDevice).Method("POST").Insert()
 	router.Route("/updatelocation").Handler(handlers.UpdateLocation).Method("PUT").Insert()
 	router.Route("/check/:id").Handler(handlers.CheckAlert).Method("GET").Insert()
+	router.Route("/delete/:id").Handler(handlers.DeleteDevice).Method("DELETE").Insert()
 
 	router.Route("/viewroutes").Handler(func(w http.ResponseWriter, r *http.Request) {
 		for _, route := range router.ViewRouteTree() {
