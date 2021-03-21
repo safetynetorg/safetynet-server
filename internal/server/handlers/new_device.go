@@ -6,14 +6,11 @@ import (
 	"net/http"
 	"safetynet/internal/constants"
 	"safetynet/internal/database"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // register a new device
 func NewDevice(w http.ResponseWriter, r *http.Request) {
 	var device database.SafetynetDevice
-	device.Id = primitive.NewObjectID()
 	json.NewDecoder(r.Body).Decode(&device)
 
 	if err := database.Database.Insert(constants.DEVICES_COLL, context.Background(), device); err != nil {
@@ -21,5 +18,5 @@ func NewDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte(device.Id.Hex()))
+	w.Write([]byte(device.Id))
 }

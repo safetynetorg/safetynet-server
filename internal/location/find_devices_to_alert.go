@@ -2,10 +2,14 @@ package location
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"safetynet/internal/alert"
 	"safetynet/internal/constants"
 	"safetynet/internal/database"
 	"sync"
 
+	"github.com/edganiukov/fcm"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -26,6 +30,9 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int
 
 	}
 	defer cursor.Close(ctx)
+
+	client, _ := fcm.NewClient(os.Getenv("SERVER_KEY"))
+	// TODO handle error
 
 	for cursor.Next(ctx) {
 
@@ -56,8 +63,9 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int
 				devices_alerted++
 				mutex.Unlock()
 
-				// add the receiver device to the alert collection
-				database.Database.Insert(constants.ALERT_COLL, ctx, database.SafetynetDevice{Id: device.Id, Lat: pair.LatSrc, Lon: pair.LonSrc})
+				_ = alert.PushNotif(device.Id, fmt.Sprintf("Lat: %f, Lon: %f", pair.LatSrc, pair.LonSrc), client)
+				// TODO handle error
+
 			}
 		}(*cursor)
 	}
