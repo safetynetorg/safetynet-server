@@ -6,7 +6,7 @@ import (
 	"safetynet/internal/helpers"
 )
 
-type latLonPair struct {
+type coordPair struct {
 	LatSrc  float64
 	LonSrc  float64
 	LatRecv float64
@@ -14,20 +14,20 @@ type latLonPair struct {
 }
 
 // check if the distance between two coordinates is within [constants.ALERT_RADIUS]
-func checkInDistance(lat_lon *latLonPair) bool {
-	distance_between := distanceBetweenLatLon(lat_lon)
+func checkInDistance(coords *coordPair) bool {
+	distance_between := distanceBetweenCoords(coords)
 
 	return distance_between <= constants.ALERT_RADIUS
 }
 
 // find the distance between two coordinated (in km)
-func distanceBetweenLatLon(lat_lon *latLonPair) float64 {
-	delta_lat := helpers.AsRadians(lat_lon.LatRecv - lat_lon.LatSrc)
-	delta_lon := helpers.AsRadians(lat_lon.LonRecv - lat_lon.LonSrc)
+func distanceBetweenCoords(coords *coordPair) float64 {
+	delta_lat := helpers.AsRadians(coords.LatRecv - coords.LatSrc)
+	delta_lon := helpers.AsRadians(coords.LonRecv - coords.LonSrc)
 
 	a := math.Sin(delta_lat/2)*math.Sin(delta_lat/2) +
-		math.Cos(helpers.AsRadians(lat_lon.LatSrc))*
-			math.Cos(helpers.AsRadians(lat_lon.LatRecv))*
+		math.Cos(helpers.AsRadians(coords.LatSrc))*
+			math.Cos(helpers.AsRadians(coords.LatRecv))*
 			math.Sin(delta_lon/2)*math.Sin(delta_lon/2)
 
 	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))

@@ -47,7 +47,7 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int
 				return
 			}
 
-			pair := &latLonPair{
+			pair := &coordPair{
 				LatSrc:  src.Lat,
 				LonSrc:  src.Lon,
 				LatRecv: device.Lat,
