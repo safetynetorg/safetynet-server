@@ -8,6 +8,8 @@ import (
 	"safetynet/internal/constants"
 	"safetynet/internal/database"
 	"safetynet/internal/helpers"
+	"strconv"
+	"sync"
 	"time"
 
 	"github.com/edganiukov/fcm"
@@ -15,8 +17,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+var mutex = &sync.Mutex{}
+
 // find devices to alert when someone is in dange
 func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) {
+
+	var devicesAlerted int
+	var wg sync.WaitGroup
 
 	devicesColl := database.Database.Safetynet.Collection(constants.DEVICES_COLL)
 
@@ -36,7 +43,9 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) {
 
 	for cursor.Next(ctx) {
 
+		wg.Add(1)
 		go func(c mongo.Cursor) {
+			defer wg.Done()
 
 			var device database.SafetynetDevice
 
@@ -68,9 +77,15 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) {
 
 				}
 
+				mutex.Lock()
+				devicesAlerted++
+				mutex.Unlock()
+
 			}
 		}(*cursor)
 	}
+	wg.Wait()
+	alert.PushNotif(src.Id, strconv.Itoa(devicesAlerted)+" device(s) alerted", client)
 }
 
 func retyConnect(sleep time.Duration, attempts int) *fcm.Client {
