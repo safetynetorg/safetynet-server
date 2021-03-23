@@ -7,7 +7,9 @@ import (
 	"safetynet/internal/alert"
 	"safetynet/internal/constants"
 	"safetynet/internal/database"
+	"safetynet/internal/helpers"
 	"sync"
+	"time"
 
 	"github.com/edganiukov/fcm"
 	"go.mongodb.org/mongo-driver/bson"
@@ -31,8 +33,12 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int
 	}
 	defer cursor.Close(ctx)
 
-	client, _ := fcm.NewClient(os.Getenv("SERVER_KEY"))
-	// TODO handle error
+	client, err := fcm.NewClient(os.Getenv("SERVER_KEY"))
+	if err != nil {
+		if client = retyConnect(2*time.Second, 2); client == nil {
+			return 0, err
+		}
+	}
 
 	for cursor.Next(ctx) {
 
@@ -57,15 +63,19 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int
 			// check if the receiver device is in range of the alert
 			if checkInDistance(pair) {
 
+				if err = alert.PushNotif(device.Id, fmt.Sprintf("Lat: %f, Lon: %f", pair.LatSrc, pair.LonSrc), client); err != nil {
+					if err = helpers.Rety(func() error {
+						return alert.PushNotif(device.Id, fmt.Sprintf("Lat: %f, Lon: %f", pair.LatSrc, pair.LonSrc), client)
+					}, 1*time.Second, 2); err != nil {
+						return
+					}
+				}
+
 				// make sure that only one goroutine can mutate the [devices_alerted] variable at a time
 				// prevents race condition
 				mutex.Lock()
 				devices_alerted++
 				mutex.Unlock()
-
-				_ = alert.PushNotif(device.Id, fmt.Sprintf("Lat: %f, Lon: %f", pair.LatSrc, pair.LonSrc), client)
-				// TODO handle error
-
 			}
 		}(*cursor)
 	}
@@ -73,4 +83,15 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int
 	// wait for goroutines in waitgroup to complete
 	wg.Wait()
 	return devices_alerted, nil
+}
+
+func retyConnect(sleep time.Duration, attempts int) *fcm.Client {
+	for i := 0; i < attempts; i++ {
+		time.Sleep(sleep)
+		client, err := fcm.NewClient(os.Getenv("SERVER_KEY"))
+		if err != nil {
+			return client
+		}
+	}
+	return nil
 }
