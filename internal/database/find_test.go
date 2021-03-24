@@ -3,12 +3,12 @@ package database
 import (
 	"context"
 	"safetynet/internal/constants"
-	"safetynet/internal/helpers"
+	"safetynet/internal/keys"
 	"testing"
 )
 
 func TestFindDeviceId(t *testing.T) {
-	helpers.LoadDotEnv()
+	keys.Load()
 	id := "id"
 	db := Connect()
 	model := SafetynetDevice{Id: id}

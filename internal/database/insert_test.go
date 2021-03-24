@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"safetynet/internal/constants"
-	"safetynet/internal/helpers"
+	"safetynet/internal/keys"
 	"testing"
 )
 
 func TestInsert(t *testing.T) {
-	helpers.LoadDotEnv()
+	keys.Load()
 	db := Connect()
 	id := "id"
 	fmt.Println(id)
