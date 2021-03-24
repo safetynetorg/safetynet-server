@@ -1,1 +1,1 @@
-web: safetynet-server
+web: safetynet
