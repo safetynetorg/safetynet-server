@@ -1,11 +1,9 @@
 package server
 
-import (
-	"safetynet/internal/constants"
-)
+import "os"
 
 // run the server
 func Run() {
 	r := httpInit()
-	r.Run(constants.PORT)
+	r.Run(os.Getenv("PORT"))
 }
