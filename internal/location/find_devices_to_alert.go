@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/edganiukov/fcm"
+	"github.com/kelvins/geocoder"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -63,19 +64,7 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) {
 			// check if the receiver device is in range of the alert
 			if checkInDistance(pair) {
 
-				if err = alert.PushNotif(device.Id, fmt.Sprintf("Lat: %f, Lon: %f", pair.LatSrc, pair.LonSrc), client); err != nil {
-
-					if err = helpers.Rety(func() error {
-
-						return alert.PushNotif(device.Id, fmt.Sprintf("Lat: %f, Lon: %f", pair.LatSrc, pair.LonSrc), client)
-
-					}, 1*time.Second, 2); err != nil {
-
-						return
-
-					}
-
-				}
+				alertDevice(&device, pair, client)
 
 				mutex.Lock()
 				devicesAlerted++
@@ -97,4 +86,34 @@ func retyConnect(sleep time.Duration, attempts int) *fcm.Client {
 		}
 	}
 	return nil
+}
+
+func alertDevice(device *database.SafetynetDevice, pair *coordPair, client *fcm.Client) {
+	var msg string
+
+	location := geocoder.Location{
+		Latitude:  pair.LatSrc,
+		Longitude: pair.LonSrc,
+	}
+
+	address, err := geocoder.GeocodingReverse(location)
+	if err != nil {
+		msg = "* location not found *"
+	}
+
+	msg = fmt.Sprintf("Alert: %s %s, %s", strconv.Itoa(address[0].Number), address[0].Street, address[0].Neighborhood)
+
+	if err := alert.PushNotif(device.Id, msg, client); err != nil {
+
+		if err = helpers.Rety(func() error {
+
+			return alert.PushNotif(device.Id, msg, client)
+
+		}, 1*time.Second, 2); err != nil {
+
+			return
+
+		}
+
+	}
 }
