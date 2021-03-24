@@ -7,7 +7,10 @@ import (
 	"safetynet/internal/alert"
 	"safetynet/internal/constants"
 	"safetynet/internal/database"
+	"safetynet/internal/helpers"
+	"strconv"
 	"sync"
+	"time"
 
 	"github.com/edganiukov/fcm"
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,27 +20,30 @@ import (
 var mutex = &sync.Mutex{}
 
 // find devices to alert when someone is in dange
-func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int, error) {
+func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) {
 
-	var devices_alerted int
+	var devicesAlerted int
 	var wg sync.WaitGroup
 
 	devicesColl := database.Database.Safetynet.Collection(constants.DEVICES_COLL)
 
 	cursor, err := devicesColl.Find(ctx, bson.D{{}})
 	if err != nil {
-		return 0, err
+		return
 
 	}
 	defer cursor.Close(ctx)
 
-	client, _ := fcm.NewClient(os.Getenv("SERVER_KEY"))
-	// TODO handle error
+	client, err := fcm.NewClient(os.Getenv("SERVER_KEY"))
+	if err != nil {
+		if client = retyConnect(2*time.Second, 2); client == nil {
+			return
+		}
+	}
 
 	for cursor.Next(ctx) {
 
 		wg.Add(1)
-
 		go func(c mongo.Cursor) {
 			defer wg.Done()
 
@@ -57,20 +63,38 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int
 			// check if the receiver device is in range of the alert
 			if checkInDistance(pair) {
 
-				// make sure that only one goroutine can mutate the [devices_alerted] variable at a time
-				// prevents race condition
-				mutex.Lock()
-				devices_alerted++
-				mutex.Unlock()
+				if err = alert.PushNotif(device.Id, fmt.Sprintf("Lat: %f, Lon: %f", pair.LatSrc, pair.LonSrc), client); err != nil {
 
-				_ = alert.PushNotif(device.Id, fmt.Sprintf("Lat: %f, Lon: %f", pair.LatSrc, pair.LonSrc), client)
-				// TODO handle error
+					if err = helpers.Rety(func() error {
+
+						return alert.PushNotif(device.Id, fmt.Sprintf("Lat: %f, Lon: %f", pair.LatSrc, pair.LonSrc), client)
+
+					}, 1*time.Second, 2); err != nil {
+
+						return
+
+					}
+
+				}
+
+				mutex.Lock()
+				devicesAlerted++
+				mutex.Unlock()
 
 			}
 		}(*cursor)
 	}
-
-	// wait for goroutines in waitgroup to complete
 	wg.Wait()
-	return devices_alerted, nil
+	alert.PushNotif(src.Id, strconv.Itoa(devicesAlerted)+" device(s) alerted", client)
+}
+
+func retyConnect(sleep time.Duration, attempts int) *fcm.Client {
+	for i := 0; i < attempts; i++ {
+		time.Sleep(sleep)
+		client, err := fcm.NewClient(os.Getenv("SERVER_KEY"))
+		if err != nil {
+			return client
+		}
+	}
+	return nil
 }
