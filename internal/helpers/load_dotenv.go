@@ -6,5 +6,5 @@ import (
 
 // load environment
 func LoadDotEnv() {
-	godotenv.Load(".env")
+	godotenv.Load("../../.env")
 }
