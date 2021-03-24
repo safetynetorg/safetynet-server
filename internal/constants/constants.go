@@ -9,6 +9,7 @@ const (
 	DEVICES_COLL    = "devices"
 	ALERT_COLL      = "alert-ids"
 	SIGN_UP_COLL    = "sign-up"
+	CONTACT_COLL    = "contact"
 	DATABASE        = "safetynet"
 	ALERT_LIFE_TIME = 30 * time.Second
 	NO_DOC_FOUND    = "mongo: no documents in result"
