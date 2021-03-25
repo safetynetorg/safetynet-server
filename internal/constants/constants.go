@@ -5,7 +5,7 @@ import "time"
 const (
 	PORT            = "8080"
 	EARTH_RADIUS    = 6371
-	ALERT_RADIUS    = 0.5
+	ALERT_RADIUS    = 0.2
 	DEVICES_COLL    = "devices"
 	ALERT_COLL      = "alert-ids"
 	SIGN_UP_COLL    = "sign-up"

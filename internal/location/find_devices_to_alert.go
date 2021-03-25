@@ -13,7 +13,6 @@ import (
 	"safetynet/internal/helpers"
 	"safetynet/internal/keys"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/edganiukov/fcm"
@@ -21,13 +20,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var mutex = &sync.Mutex{}
+type addressData struct {
+	Data []addressLocation
+}
+
+type addressLocation struct {
+	Distance      float64
+	Name          string
+	Neighbourhood string
+}
 
 // find devices to alert when someone is in dange
 func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) {
-
-	var devicesAlerted int
-	var wg sync.WaitGroup
 
 	devicesColl := database.Database.Safetynet.Collection(constants.DEVICES_COLL)
 
@@ -47,10 +51,7 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) {
 
 	for cursor.Next(ctx) {
 
-		wg.Add(1)
 		go func(c mongo.Cursor) {
-			defer wg.Done()
-
 			var device database.SafetynetDevice
 
 			if err := c.Decode(&device); err != nil || device.Id == src.Id {
@@ -69,15 +70,9 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) {
 
 				alertDevice(&device, pair, client)
 
-				mutex.Lock()
-				devicesAlerted++
-				mutex.Unlock()
-
 			}
 		}(*cursor)
 	}
-	wg.Wait()
-	alert.PushNotif(src.Id, strconv.Itoa(devicesAlerted)+" device(s) alerted", client)
 }
 
 func retyConnect(sleep time.Duration, attempts int) *fcm.Client {
@@ -160,14 +155,4 @@ func getLocation(coords *coordPair) (*addressLocation, error) {
 
 	json.Unmarshal(body, &address)
 	return &address.Data[0], nil
-}
-
-type addressData struct {
-	Data []addressLocation
-}
-
-type addressLocation struct {
-	Distance      float64
-	Name          string
-	Neighbourhood string
 }
