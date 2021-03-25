@@ -1,20 +1,23 @@
 package server
 
 import (
+	"github.com/ChristianStefaniw/cgr"
 	"net/http"
 	"safetynet/internal/server/handlers"
-
-	"github.com/ChristianStefaniw/cgr"
+	"safetynet/internal/server/middleware"
 )
 
 func httpInit() *cgr.Router {
 	router := cgr.NewRouter()
+	corsMiddleware := cgr.NewMiddleware(middleware.CorsMiddleware)
 
 	// api endpoints
 	router.Route("/alert").Handler(handlers.FindDevicesToAlert).Method("POST").Insert()
 	router.Route("/new").Handler(handlers.NewDevice).Method("POST").Insert()
 	router.Route("/signup").Handler(handlers.SignUp).Method("POST").Insert()
 	router.Route("/contact").Handler(handlers.Contact).Method("POST").Insert()
+	router.Route("/contact").Handler(handlers.Cors).Assign(corsMiddleware).Method("OPTIONS").Insert()
+	router.Route("/signup").Handler(handlers.Cors).Assign(corsMiddleware).Method("OPTIONS").Insert()
 	router.Route("/updatelocation").Handler(handlers.UpdateLocation).Method("PUT").Insert()
 	router.Route("/delete/:id").Handler(handlers.DeleteDevice).Method("DELETE").Insert()
 
