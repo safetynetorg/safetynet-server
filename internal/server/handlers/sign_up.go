@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"safetynet/internal/constants"
 	"safetynet/internal/database"
+	"safetynet/internal/helpers"
 )
 
 // Adding email into sign up collection
@@ -16,5 +17,22 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+	if err := sendConfirm(email.Email); err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
+}
+
+func sendConfirm(email string) error {
+	body := "Thank you for signing up for the Safetynet newsletter!"
+
+	msg := "From: " + constants.SAFETYNET_EMAIL + "\n" +
+		"To: " + email + "\n" +
+		"Subject: Thank you!\n\n" +
+		body
+
+	err := helpers.SendEmail(msg, email)
+
+	return err
 }

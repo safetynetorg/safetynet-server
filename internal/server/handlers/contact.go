@@ -2,38 +2,38 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
-	"safetynet/internal/database"
-	"net/smtp"
-	"log"
+	"safetynet/internal/constants"
+	"safetynet/internal/helpers"
 )
+
+type contact struct {
+	Id       string `bson:"_id,omitempty"`
+	Name     string `bson:"name,omitempty"`
+	Email    string `bson:"email,omitempty"`
+	Question string `bson:"question,omitempty"`
+}
 
 // Adding contact questions into contact collection
 func Contact(w http.ResponseWriter, r *http.Request) {
-	var contact database.Contact
-	json.NewDecoder(r.Body).Decode(&contact)
-	send("Email: " + contact.Email + "\nName: " + contact.Name + "\nQuestion: " + contact.Question)
+	c := new(contact)
+	json.NewDecoder(r.Body).Decode(c)
+	if err := send(c); err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }
 
-func send(body string) {
-	from := "arcanederp@gmail.com"
-	pass := "Gamingmaster4224"
-	to := "help.safetynetorg@gmail.com"
-
-	msg := "From: " + from + "\n" +
-		"To: " + to + "\n" +
-		"Subject: Contact\n\n" +
+func send(c *contact) error {
+	body := fmt.Sprintf("Email: %s\nName: %s\nQuestion: %s\n", c.Email, c.Name, c.Question)
+	msg := "From: " + c.Email + "\n" +
+		"To: " + constants.SAFETYNET_EMAIL + "\n" +
+		"Subject: Question\n\n" +
 		body
 
-	err := smtp.SendMail("smtp.gmail.com:587",
-		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
-		from, []string{to}, []byte(msg))
+	err := helpers.SendEmail(msg, constants.SAFETYNET_EMAIL)
 
-	if err != nil {
-		log.Printf("smtp error: %s", err)
-		return
-	}
-	
-	log.Print("sent")
+	return err
 }

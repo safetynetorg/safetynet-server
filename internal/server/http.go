@@ -12,6 +12,7 @@ func httpInit() *cgr.Router {
 	corsMiddleware := cgr.NewMiddleware(middleware.CorsMiddleware)
 
 	// api endpoints
+	router.Route("/").Handler(handlers.Home).Method("GET").Insert()
 	router.Route("/alert").Handler(handlers.FindDevicesToAlert).Method("POST").Insert()
 	router.Route("/new").Handler(handlers.NewDevice).Method("POST").Insert()
 	router.Route("/signup").Handler(handlers.SignUp).Assign(corsMiddleware).Method("POST").Insert()
