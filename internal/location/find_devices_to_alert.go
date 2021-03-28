@@ -106,11 +106,9 @@ func alertDevice(device *database.SafetynetDevice, pair *coordPair, client *fcm.
 
 	if err := alert.PushNotif(device.Id, msg, client); err != nil {
 
-		err = helpers.Rety(func() error {
+		retry := func() error { return alert.PushNotif(device.Id, msg, client) }
 
-			return alert.PushNotif(device.Id, msg, client)
-
-		}, 1*time.Second, 2)
+		err = helpers.Rety(retry, 1*time.Second, 2)
 
 		if err != nil {
 			return err
