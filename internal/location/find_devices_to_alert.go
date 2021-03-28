@@ -13,6 +13,7 @@ import (
 	"safetynet/internal/helpers"
 	"safetynet/internal/keys"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/edganiukov/fcm"
@@ -31,13 +32,15 @@ type addressLocation struct {
 }
 
 // find devices to alert when someone is in dange
-func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) {
+func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int, error) {
+	var wg sync.WaitGroup
+	var alertedDevices int
 
 	devicesColl := database.Database.Safetynet.Collection(constants.DEVICES_COLL)
 
 	cursor, err := devicesColl.Find(ctx, bson.D{{}})
 	if err != nil {
-		return
+		return 0, err
 
 	}
 	defer cursor.Close(ctx)
@@ -45,12 +48,13 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) {
 	client, err := fcm.NewClient(keys.SERVER_KEY)
 	if err != nil {
 		if client = retyConnect(2*time.Second, 2); client == nil {
-			return
+			return 0, err
 		}
 	}
 
 	for cursor.Next(ctx) {
 
+		wg.Add(1)
 		go func(c mongo.Cursor) {
 			var device database.SafetynetDevice
 
@@ -68,11 +72,15 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) {
 			// check if the receiver device is in range of the alert
 			if checkInDistance(pair) {
 
-				alertDevice(&device, pair, client)
+				if err := alertDevice(&device, pair, client); err == nil {
+					alertedDevices++
+				}
 
 			}
 		}(*cursor)
 	}
+	wg.Wait()
+	return alertedDevices, nil
 }
 
 func retyConnect(sleep time.Duration, attempts int) *fcm.Client {
@@ -86,7 +94,7 @@ func retyConnect(sleep time.Duration, attempts int) *fcm.Client {
 	return nil
 }
 
-func alertDevice(device *database.SafetynetDevice, pair *coordPair, client *fcm.Client) {
+func alertDevice(device *database.SafetynetDevice, pair *coordPair, client *fcm.Client) error {
 	address, err := getLocation(pair)
 	var msg string
 
@@ -98,17 +106,18 @@ func alertDevice(device *database.SafetynetDevice, pair *coordPair, client *fcm.
 
 	if err := alert.PushNotif(device.Id, msg, client); err != nil {
 
-		if err = helpers.Rety(func() error {
+		err = helpers.Rety(func() error {
 
 			return alert.PushNotif(device.Id, msg, client)
 
-		}, 1*time.Second, 2); err != nil {
+		}, 1*time.Second, 2)
 
-			return
-
+		if err != nil {
+			return err
 		}
 
 	}
+	return nil
 }
 
 func getLocation(coords *coordPair) (*addressLocation, error) {

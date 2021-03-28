@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
+
 	"safetynet/internal/database"
 	"safetynet/internal/location"
 )
@@ -17,7 +19,12 @@ func FindDevicesToAlert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// alert devices
-	go location.FindDevicesToAlert(context.Background(), &device)
+	devicesAlerted, err := location.FindDevicesToAlert(context.Background(), &device)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 
 	w.WriteHeader(http.StatusAccepted)
+	w.Write([]byte(strconv.Itoa(devicesAlerted)))
 }
