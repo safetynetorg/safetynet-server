@@ -47,7 +47,7 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int
 
 	client, err := fcm.NewClient(keys.SERVER_KEY)
 	if err != nil {
-		if client = retyConnect(2*time.Second, 2); client == nil {
+		if client = retryConnect(2*time.Second, 2); client == nil {
 			return 0, err
 		}
 	}
@@ -83,7 +83,7 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int
 	return alertedDevices, nil
 }
 
-func retyConnect(sleep time.Duration, attempts int) *fcm.Client {
+func retryConnect(sleep time.Duration, attempts int) *fcm.Client {
 	for i := 0; i < attempts; i++ {
 		time.Sleep(sleep)
 		client, err := fcm.NewClient(keys.SERVER_KEY)
@@ -108,7 +108,7 @@ func alertDevice(device *database.SafetynetDevice, pair *coordPair, client *fcm.
 
 		retry := func() error { return alert.PushNotif(device.Id, msg, client) }
 
-		err = helpers.Rety(retry, 1*time.Second, 2)
+		err = helpers.Retry(retry, 1*time.Second, 2)
 
 		if err != nil {
 			return err
