@@ -9,9 +9,9 @@ import (
 )
 
 type contact struct {
-	Name     string
-	Email    string
-	Question string
+	Name     string `json:"name,omitempty"`
+	Email    string `json:"email,omitempty"`
+	Question string `json:"question,omitempty"`
 }
 
 // Adding contact questions into contact collection
