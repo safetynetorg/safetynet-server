@@ -155,6 +155,8 @@ func getLocation(coords *coordPair) (*addressLocation, error) {
 
 	defer res.Body.Close()
 
+	// TODO decode as stream
+	
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
