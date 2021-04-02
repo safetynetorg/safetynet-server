@@ -19,7 +19,7 @@ func FindDevicesToAlert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// alert devices
-	devicesAlerted, err := location.FindDevicesToAlert(context.Background(), &device)
+	devicesAlerted, err := location.FindDevicesToAlert(context.Background(), device)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

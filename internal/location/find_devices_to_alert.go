@@ -31,7 +31,7 @@ type addressLocation struct {
 }
 
 // find devices to alert when someone is in dange
-func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int, error) {
+func FindDevicesToAlert(ctx context.Context, src database.SafetynetDevice) (int, error) {
 	var wg sync.WaitGroup
 	var alertedDevices int
 
@@ -59,7 +59,7 @@ func FindDevicesToAlert(ctx context.Context, src *database.SafetynetDevice) (int
 	return alertedDevices, nil
 }
 
-func checkAndAlert(c mongo.Cursor, wg *sync.WaitGroup, src *database.SafetynetDevice, alertedDevices *int, client *fcm.Client) {
+func checkAndAlert(c mongo.Cursor, wg *sync.WaitGroup, src database.SafetynetDevice, alertedDevices *int, client *fcm.Client) {
 	defer wg.Done()
 	var device database.SafetynetDevice
 
@@ -67,7 +67,7 @@ func checkAndAlert(c mongo.Cursor, wg *sync.WaitGroup, src *database.SafetynetDe
 		return
 	}
 
-	pair := &coordPair{
+	pair := coordPair{
 		LatSrc:  src.Lat,
 		LonSrc:  src.Lon,
 		LatRecv: device.Lat,
@@ -76,7 +76,7 @@ func checkAndAlert(c mongo.Cursor, wg *sync.WaitGroup, src *database.SafetynetDe
 
 	// check if the receiver device is in range of the alert
 	if checkInDistance(pair) {
-		if err := alertDevice(&device, pair, client); err == nil {
+		if err := alertDevice(device, pair, client); err == nil {
 			*alertedDevices++
 		}
 	}
@@ -93,7 +93,7 @@ func retryConnect(sleep time.Duration, attempts int) *fcm.Client {
 	return nil
 }
 
-func alertDevice(device *database.SafetynetDevice, pair *coordPair, client *fcm.Client) error {
+func alertDevice(device database.SafetynetDevice, pair coordPair, client *fcm.Client) error {
 	address, err := getLocation(pair)
 	var msg string
 
@@ -117,7 +117,7 @@ func alertDevice(device *database.SafetynetDevice, pair *coordPair, client *fcm.
 	return nil
 }
 
-func getLocation(coords *coordPair) (*addressLocation, error) {
+func getLocation(coords coordPair) (*addressLocation, error) {
 	var address addressData
 	baseURL, err := url.Parse("http://api.positionstack.com")
 	if err != nil {
