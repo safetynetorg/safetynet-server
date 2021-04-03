@@ -18,17 +18,6 @@ func UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	// check if the device id exists
 	_, err := database.Database.FindDeviceById("devices", context.Background(), device.Id)
 
-	// if the device id does not exists then create it
-	if err.Error() == constants.NO_DOC_FOUND {
-		if err := database.Database.Insert(constants.DEVICES_COLL, context.Background(), device); err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(device)
-		return
-	}
-
 	payload := bson.M{"$set": bson.M{"lat": device.Lat, "lon": device.Lon}}
 	if err := database.Database.Update(constants.DEVICES_COLL, context.Background(), device.Id, payload); err != nil {
 		http.Error(w, err.Error(), 500)
