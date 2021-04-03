@@ -14,17 +14,18 @@ import (
 )
 
 func RemoveUninstalledDevices() {
-	ticker := time.NewTicker(4 * time.Hour)
+	ticker := time.NewTicker(30 * time.Minute)
 	ctx := context.Background()
 
 	for range ticker.C {
 		devicesColl := database.Database.Safetynet.Collection(constants.DEVICES_COLL)
 
 		cursor, err := devicesColl.Find(ctx, bson.D{{}})
-		defer cursor.Close(ctx)
 		if err != nil {
 			continue
 		}
+
+		defer cursor.Close(ctx)
 
 		for cursor.Next(ctx) {
 			go checkAndRemoveDevice(*cursor, ctx)
