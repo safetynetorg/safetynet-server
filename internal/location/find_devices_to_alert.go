@@ -44,12 +44,6 @@ func FindDevicesToAlert(ctx context.Context, src database.SafetynetDevice) (int,
 	}
 	defer cursor.Close(ctx)
 
-	if err != nil {
-		if alert.Client = retryConnect(2*time.Second, 2); alert.Client == nil {
-			return 0, err
-		}
-	}
-
 	for cursor.Next(ctx) {
 		wg.Add(1)
 		go checkAndAlert(*cursor, &wg, src, &alertedDevices, alert.Client)
@@ -79,17 +73,6 @@ func checkAndAlert(c mongo.Cursor, wg *sync.WaitGroup, src database.SafetynetDev
 			*alertedDevices++
 		}
 	}
-}
-
-func retryConnect(sleep time.Duration, attempts int) *fcm.Client {
-	for i := 0; i < attempts; i++ {
-		time.Sleep(sleep)
-		client, err := fcm.NewClient(keys.SERVER_KEY)
-		if err != nil {
-			return client
-		}
-	}
-	return nil
 }
 
 func alertDevice(device database.SafetynetDevice, pair coordPair, client *fcm.Client) error {
