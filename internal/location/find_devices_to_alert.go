@@ -44,16 +44,15 @@ func FindDevicesToAlert(ctx context.Context, src database.SafetynetDevice) (int,
 	}
 	defer cursor.Close(ctx)
 
-	client, err := fcm.NewClient(keys.SERVER_KEY)
 	if err != nil {
-		if client = retryConnect(2*time.Second, 2); client == nil {
+		if alert.Client = retryConnect(2*time.Second, 2); alert.Client == nil {
 			return 0, err
 		}
 	}
 
 	for cursor.Next(ctx) {
 		wg.Add(1)
-		go checkAndAlert(*cursor, &wg, src, &alertedDevices, client)
+		go checkAndAlert(*cursor, &wg, src, &alertedDevices, alert.Client)
 	}
 	wg.Wait()
 	return alertedDevices, nil

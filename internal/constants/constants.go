@@ -14,4 +14,5 @@ const (
 	ALERT_LIFE_TIME time.Duration = 30 * time.Second
 	NO_DOC_FOUND    string        = "mongo: no documents in result"
 	SAFETYNET_EMAIL string        = "help.safetynetorg@gmail.com"
+	TOKEN_VERIFY    string        = "https://iid.googleapis.com/iid/info/"
 )
