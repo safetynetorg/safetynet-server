@@ -14,7 +14,7 @@ import (
 )
 
 func RemoveUninstalledDevices() {
-	ticker := time.NewTicker(2 * time.Second)
+	ticker := time.NewTicker(4 * time.Hour)
 	ctx := context.Background()
 
 	for range ticker.C {
