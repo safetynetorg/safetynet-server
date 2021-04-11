@@ -3,8 +3,8 @@ package server
 import (
 	"github.com/ChristianStefaniw/cgr"
 	"net/http"
-	"safetynet/internal/server/handlers"
-	"safetynet/internal/server/middleware"
+	"safetynet/internal/handlers"
+	"safetynet/internal/middleware"
 )
 
 func httpInit() *cgr.Router {
