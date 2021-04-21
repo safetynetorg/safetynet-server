@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"safetynet/internal/database"
+	"safetynet/internal/firebase"
 	"safetynet/internal/location"
 )
 
@@ -15,6 +16,11 @@ func FindDevicesToAlert(w http.ResponseWriter, r *http.Request) {
 	var device database.SafetynetDevice
 	if err := json.NewDecoder(r.Body).Decode(&device); err != nil {
 		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	if !firebase.VerifyToken(device.Id, context.Background()) {
+		http.Error(w, "Invalid device", 500)
 		return
 	}
 
