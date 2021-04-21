@@ -134,6 +134,8 @@ func getLocation(coords coordPair) (*addressLocation, error) {
 		return nil, err
 	}
 
+	defer res.Body.Close()
+
 	if err = json.NewDecoder(res.Body).Decode(&address); err != nil {
 		return nil, err
 	}
