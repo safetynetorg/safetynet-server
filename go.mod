@@ -3,7 +3,7 @@ module safetynet
 go 1.15
 
 require (
-	github.com/ChristianStefaniw/cgr v1.0.0-alpha.9
+	github.com/ChristianStefaniw/cgr-v2 v0.0.0-20210424223747-ac4ff413187d // indirect
 	github.com/edganiukov/fcm v0.4.0
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/go-cmp v0.5.5 // indirect
