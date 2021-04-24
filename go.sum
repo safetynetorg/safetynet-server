@@ -1,6 +1,4 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/ChristianStefaniw/cgr v1.0.0-alpha.9 h1:1VHAHTMjmSv9utZNWuG3Na3UkZVmOIABCAqv8fWb4OM=
-github.com/ChristianStefaniw/cgr v1.0.0-alpha.9/go.mod h1:PTdTlNgAv//YtKH93Q+Qtkurg4JoXGYuTwNwB4FjSi4=
 github.com/ChristianStefaniw/cgr-v2 v0.0.0-20210424223747-ac4ff413187d h1:rTQ1MnQrlgXiLDuNOpHhzbkzPJAlNZHQKP5MXACTAkA=
 github.com/ChristianStefaniw/cgr-v2 v0.0.0-20210424223747-ac4ff413187d/go.mod h1:ylPnNgf3jAKe3NVz9KJI1K9+WnUuuSows6N+EuIIGKY=
 github.com/aws/aws-sdk-go v1.34.28 h1:sscPpn/Ns3i0F4HPEWAVcwdIRaZZCuL7llJ2/60yPIk=

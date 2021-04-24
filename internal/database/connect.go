@@ -26,6 +26,7 @@ func Connect() *db {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer client.Disconnect(context.Background())
 
 	if err := client.Ping(ctx, nil); err != nil {
 		log.Fatal(err)
