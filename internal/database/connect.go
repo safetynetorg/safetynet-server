@@ -14,13 +14,13 @@ import (
 func Connect() *db {
 	var (
 		ctx      context.Context
-		mongoUrl string
+		mongoURI string
 	)
 
 	ctx = context.Background()
-	mongoUrl = keys.MONGO_URL
+	mongoURI = keys.MONGO_URI
 
-	client_options := options.Client().ApplyURI(mongoUrl)
+	client_options := options.Client().ApplyURI(mongoURI)
 
 	client, err := mongo.Connect(ctx, client_options)
 	if err != nil {
