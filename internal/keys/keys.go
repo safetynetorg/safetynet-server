@@ -13,7 +13,7 @@ var PORT string
 var EMAIL_PASS string
 
 func Load() {
-	godotenv.Load("../../.env")
+	godotenv.Load(".env")
 	MONGO_URI = os.Getenv("MONGO_URI")
 	SERVER_KEY = os.Getenv("SERVER_KEY")
 	GEO_KEY = os.Getenv("GEO_KEY")
