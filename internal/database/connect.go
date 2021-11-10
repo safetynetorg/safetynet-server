@@ -20,9 +20,9 @@ func Connect() *db {
 	ctx = context.Background()
 	mongoURI = keys.MONGO_URI
 
-	client_options := options.Client().ApplyURI(mongoURI)
+	clientOptions := options.Client().ApplyURI(mongoURI)
 
-	client, err := mongo.Connect(ctx, client_options)
+	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
