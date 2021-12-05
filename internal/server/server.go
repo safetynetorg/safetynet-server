@@ -1,9 +1,9 @@
 package server
 
-import "safetynet/internal/keys"
+import "os"
 
 // run the server
 func Run() {
 	r := httpInit()
-	r.Run(keys.PORT)
+	r.Run(os.Getenv("PORT"))
 }

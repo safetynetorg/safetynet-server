@@ -2,15 +2,15 @@ package helpers
 
 import (
 	"net/smtp"
+	"os"
 	"safetynet/internal/constants"
-	"safetynet/internal/keys"
 )
 
 var auth smtp.Auth
 
 func AuthEmail() {
 	from := constants.SAFETYNET_EMAIL
-	pass := keys.EMAIL_PASS
+	pass := os.Getenv("EMAIL_PASS")
 
 	auth = smtp.PlainAuth("", from, pass, "smtp.gmail.com")
 }

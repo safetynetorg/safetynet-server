@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 	"log"
+	"os"
 	"safetynet/internal/constants"
-	"safetynet/internal/keys"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -12,15 +12,10 @@ import (
 
 // connect to mongodb
 func Connect() *db {
-	var (
-		ctx      context.Context
-		mongoURI string
-	)
 
-	ctx = context.Background()
-	mongoURI = keys.MONGO_URI
+	ctx := context.Background()
 
-	clientOptions := options.Client().ApplyURI(mongoURI)
+	clientOptions := options.Client().ApplyURI(os.Getenv("MONGO_URI"))
 
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {

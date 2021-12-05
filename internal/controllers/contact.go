@@ -19,6 +19,7 @@ func Contact(w http.ResponseWriter, r *http.Request) {
 	c := new(contact)
 	json.NewDecoder(r.Body).Decode(c)
 	if err := send(c); err != nil {
+		fmt.Println(err)
 		http.Error(w, err.Error(), 500)
 		return
 	}

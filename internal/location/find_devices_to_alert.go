@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"safetynet/internal/alert"
 	"safetynet/internal/constants"
 	"safetynet/internal/database"
 	"safetynet/internal/helpers"
-	"safetynet/internal/keys"
 	"strconv"
 	"sync"
 	"time"
@@ -110,7 +110,7 @@ func getLocation(coords coordPair) (*addressLocation, error) {
 
 	params := url.Values{}
 
-	params.Add("access_key", keys.GEO_KEY)
+	params.Add("access_key", os.Getenv("GEO_KEY"))
 
 	lon := strconv.FormatFloat(coords.LonSrc, 'E', -1, 64)
 

@@ -1,12 +1,12 @@
 package database
 
 import (
-	"safetynet/internal/keys"
+	"safetynet/internal/env"
 	"testing"
 )
 
 func TestConnect(t *testing.T) {
-	keys.Load()
+	env.Load()
 
 	db := Connect()
 

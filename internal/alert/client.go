@@ -2,7 +2,7 @@ package alert
 
 import (
 	"log"
-	"safetynet/internal/keys"
+	"os"
 
 	"github.com/edganiukov/fcm"
 )
@@ -10,7 +10,7 @@ import (
 var Client *fcm.Client
 
 func InitClient() {
-	client, err := fcm.NewClient(keys.SERVER_KEY)
+	client, err := fcm.NewClient(os.Getenv("SERVER_KEY"))
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -3,9 +3,9 @@ package firebase
 import (
 	"context"
 	"net/http"
+	"os"
 	"safetynet/internal/alert"
 	"safetynet/internal/constants"
-	"safetynet/internal/keys"
 )
 
 func VerifyToken(fcmToken string, ctx context.Context) bool {
@@ -13,7 +13,7 @@ func VerifyToken(fcmToken string, ctx context.Context) bool {
 
 	req, _ := http.NewRequest("GET", url, nil)
 
-	req.Header.Set("Authorization", "key="+keys.SERVER_KEY)
+	req.Header.Set("Authorization", "key="+os.Getenv("SERVER_KEY"))
 
 	res, err := http.DefaultClient.Do(req)
 
