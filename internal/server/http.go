@@ -16,7 +16,7 @@ func httpInit() *cgr.Router {
 	router.Route("/alert").Handler(controllers.FindDevicesToAlert).Method("POST").Insert()
 	router.Route("/new").Handler(controllers.NewDevice).Method("POST").Insert()
 	router.Route("/signup").Handler(controllers.SignUp).Assign(corsMiddleware).HandlePreflight().Method("POST", "OPTIONS").Insert()
-	router.Route("/contact").Handler(controllers.Contact).Assign(corsMiddleware).HandlePreflight().Method("POST", "OPTIONS", "GET").Insert()
+	router.Route("/contact").Handler(controllers.Contact).Assign(corsMiddleware).HandlePreflight().Method("POST", "OPTIONS").Insert()
 	router.Route("/updatelocation").Handler(controllers.UpdateLocation).Method("PUT").Insert()
 	router.Route("/delete/:id").Handler(controllers.DeleteDevice).Method("DELETE").Insert()
 
